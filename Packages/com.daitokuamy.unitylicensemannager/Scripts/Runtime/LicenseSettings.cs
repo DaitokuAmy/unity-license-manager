@@ -14,14 +14,6 @@ namespace UnityLicenseManager {
     /// </summary>
     public class LicenseSettings : ScriptableObject {
         /// <summary>
-        /// データ格納タイプ
-        /// </summary>
-        public enum DataType {
-            TextAsset,
-            Text,
-        }
-
-        /// <summary>
         /// ライセンス情報
         /// </summary>
         [Serializable]
@@ -30,8 +22,6 @@ namespace UnityLicenseManager {
             public bool isActive;
             [Tooltip("システム名")]
             public string name;
-            [Tooltip("データタイプ")]
-            public DataType dataType;
             [Tooltip("ライセンスアセット")]
             public TextAsset asset;
             [Tooltip("テキスト")]
@@ -41,11 +31,11 @@ namespace UnityLicenseManager {
         /// <summary>
         /// 返却用のライセンス情報
         /// </summary>
-        private class ExportLicenseInfo : ILicenseInfo {
+        private class InternalLicenseInfo : ILicenseInfo {
             public string Name { get; }
             public string License { get; }
 
-            public ExportLicenseInfo(string name, string license) {
+            public InternalLicenseInfo(string name, string license) {
                 Name = name;
                 License = license;
             }
@@ -93,17 +83,12 @@ namespace UnityLicenseManager {
                     continue;
                 }
 
-                var license = info.dataType switch {
-                    DataType.TextAsset => info.asset != null ? info.asset.text : string.Empty,
-                    DataType.Text => info.text,
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-
+                var license = info.asset != null ? info.asset.text : info.text;
                 if (string.IsNullOrEmpty(license)) {
                     continue;
                 }
 
-                result.Add(new ExportLicenseInfo(info.name, license));
+                result.Add(new InternalLicenseInfo(info.name, license));
             }
 
             return result.ToArray();
