@@ -18,90 +18,121 @@ namespace UnityLicenseManager.Editor {
 
         /// <inheritdoc/>
         public override void OnInspectorGUI() {
-            using (var scrollScope = new EditorGUILayout.ScrollViewScope(_listScroll, GUILayout.ExpandHeight(true))) {
-                serializedObject.Update();
+            serializedObject.Update();
 
+            using (var scrollScope = new EditorGUILayout.ScrollViewScope(_listScroll, GUILayout.Height(300))) {
                 // Display List
                 _licenseInfoList.DoLayoutList();
 
-                using (new EditorGUILayout.HorizontalScope()) {
-                    // Clear
-                    if (GUILayout.Button("Clear")) {
-                        _licenseInfosProp.ClearArray();
-                        _licenseInfoList.ClearSelection();
-                    }
+                _listScroll = scrollScope.scrollPosition;
+            }
 
-                    // Auto Search
-                    if (GUILayout.Button("Auto Search")) {
-                        var currentAssets = new List<TextAsset>(_licenseInfosProp.arraySize);
-                        for (var i = 0; i < _licenseInfosProp.arraySize; i++) {
-                            var elementProp = _licenseInfosProp.GetArrayElementAtIndex(i);
-                            var assetProp = elementProp.FindPropertyRelative("asset");
-                            if (assetProp.objectReferenceValue is TextAsset asset) {
-                                currentAssets.Add(asset);
-                            }
-                        }
+            EditorGUILayout.Space();
 
-                        var guids = AssetDatabase.FindAssets("t:textasset LICENSE", new[] { "Assets", "Packages" });
-                        foreach (var guid in guids) {
-                            var path = AssetDatabase.GUIDToAssetPath(guid);
-                            var fileName = Path.GetFileNameWithoutExtension(path).ToLower();
-                            if (fileName != "license") {
-                                continue;
-                            }
-
-                            var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
-                            if (currentAssets.Contains(asset)) {
-                                continue;
-                            }
-
-                            var index = _licenseInfosProp.arraySize;
-                            _licenseInfosProp.InsertArrayElementAtIndex(index);
-                            _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("asset").objectReferenceValue = asset;
-                            _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("isActive").boolValue = true;
-                        }
-                    }
+            using (new EditorGUILayout.HorizontalScope()) {
+                // Clear
+                if (GUILayout.Button("Clear")) {
+                    _licenseInfosProp.ClearArray();
+                    _licenseInfoList.ClearSelection();
                 }
 
-                serializedObject.ApplyModifiedProperties();
+                // Auto Search
+                if (GUILayout.Button("Auto Search")) {
+                    var currentAssets = new List<TextAsset>(_licenseInfosProp.arraySize);
+                    for (var i = 0; i < _licenseInfosProp.arraySize; i++) {
+                        var elementProp = _licenseInfosProp.GetArrayElementAtIndex(i);
+                        var assetProp = elementProp.FindPropertyRelative("asset");
+                        if (assetProp.objectReferenceValue is TextAsset asset) {
+                            currentAssets.Add(asset);
+                        }
+                    }
 
-                _listScroll = scrollScope.scrollPosition;
+                    var guids = AssetDatabase.FindAssets("t:textasset LICENSE", new[] { "Assets", "Packages" });
+                    foreach (var guid in guids) {
+                        var path = AssetDatabase.GUIDToAssetPath(guid);
+                        var fileName = Path.GetFileNameWithoutExtension(path).ToLower();
+                        if (fileName != "license") {
+                            continue;
+                        }
+
+                        var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
+                        if (currentAssets.Contains(asset)) {
+                            continue;
+                        }
+
+                        var index = _licenseInfosProp.arraySize;
+                        _licenseInfosProp.InsertArrayElementAtIndex(index);
+                        _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("name").stringValue = string.Empty;
+                        _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("asset").objectReferenceValue = asset;
+                        _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("text").stringValue = string.Empty;
+                        _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("isActive").boolValue = true;
+                    }
+                }
             }
 
             // Preview
             if (_licenseInfoList.selectedIndices.Count > 0) {
                 var index = _licenseInfoList.selectedIndices[0];
+                var nameProp = _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("name");
                 var assetProp = _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("asset");
-                if (assetProp.objectReferenceValue is TextAsset textAsset) {
-                    using (new EditorGUILayout.VerticalScope()) {
-                        EditorGUILayout.LabelField("Preview", EditorStyles.objectFieldThumb);
-
-                        var height = EditorStyles.label.CalcHeight(new GUIContent(textAsset.text), Screen.width);
-                        EditorGUILayout.LabelField(textAsset.text, EditorStyles.objectField, GUILayout.Height(height));
-
-                        using (new EditorGUILayout.HorizontalScope()) {
-                            using (new EditorGUI.DisabledScope(true)) {
-                                EditorGUILayout.ObjectField(textAsset, typeof(TextAsset), true);
+                var textProp = _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("text");
+                var textAsset = assetProp.objectReferenceValue as TextAsset;
+                using (new EditorGUILayout.VerticalScope()) {
+                    EditorGUILayout.Space();
+                    EditorGUILayout.LabelField("Preview", EditorStyles.objectFieldThumb);
+                    EditorGUILayout.PropertyField(nameProp);
+                    using (var scope = new EditorGUI.ChangeCheckScope()) {
+                        EditorGUILayout.PropertyField(assetProp, new GUIContent("License"));
+                        if (scope.changed) {
+                            if (assetProp.objectReferenceValue != null) {
+                                textProp.stringValue = string.Empty;
                             }
+                        }
+                    }
 
-                            if (GUILayout.Button("Copy Clipboard")) {
-                                GUIUtility.systemCopyBuffer = textAsset.text;
+                    var text = textAsset != null ? textAsset.text : textProp.stringValue;
+                    var height = EditorStyles.textArea.CalcHeight(new GUIContent(text), EditorGUIUtility.currentViewWidth);
+                    var useTextAsset = textAsset != null;
+                    using (new EditorGUI.DisabledScope(useTextAsset)) {
+                        using (var scope = new EditorGUI.ChangeCheckScope()) {
+                            text = EditorGUILayout.TextArea(text, EditorStyles.textArea, GUILayout.Height(height));
+                            if (scope.changed) {
+                                textProp.stringValue = text;
                             }
+                        }
+                    }
+
+                    using (new EditorGUILayout.HorizontalScope()) {
+                        EditorGUILayout.Space();
+                        if (GUILayout.Button("Copy Clipboard")) {
+                            GUIUtility.systemCopyBuffer = text;
                         }
                     }
                 }
             }
+
+            serializedObject.ApplyModifiedProperties();
         }
 
         /// <summary>
         /// ライセンスのヘッダー表示用テキストを取得
         /// </summary>
-        private string GetLicenseHeaderText(TextAsset asset) {
-            if (asset == null) {
+        private string GetLicenseHeaderText(SerializedProperty elementProp) {
+            if (elementProp == null) {
                 return "Unknown";
             }
 
-            var lines = asset.text.Split("\n").ToArray();
+            var nameProp = elementProp.FindPropertyRelative("name");
+            if (!string.IsNullOrEmpty(nameProp.stringValue)) {
+                return nameProp.stringValue;
+            }
+
+            var assetProp = elementProp.FindPropertyRelative("asset");
+            var textProp = elementProp.FindPropertyRelative("text");
+            var textAsset = assetProp.objectReferenceValue as TextAsset;
+            var text = textAsset != null ? textAsset.text : textProp.stringValue;
+
+            var lines = text.Split("\n").ToArray();
             if (lines.Length <= 0) {
                 return "Unknown";
             }
@@ -111,7 +142,7 @@ namespace UnityLicenseManager.Editor {
                 result = lines[0];
             }
 
-            return result;
+            return $"<{result}>";
         }
 
         /// <summary>
@@ -123,7 +154,12 @@ namespace UnityLicenseManager.Editor {
             for (var i = prop.arraySize - 1; i >= 0; i--) {
                 var elementProp = prop.GetArrayElementAtIndex(i);
                 var assetProp = elementProp.FindPropertyRelative("asset");
-                if (assetProp.objectReferenceValue == null) {
+                var textProp = elementProp.FindPropertyRelative("text");
+                
+                // TextAssetがMissingしていたら自動削除
+                if (assetProp.objectReferenceValue == null &&
+                    assetProp.objectReferenceInstanceIDValue != 0 &&
+                    string.IsNullOrEmpty(textProp.stringValue)) {
                     prop.DeleteArrayElementAtIndex(i);
                     dirty = true;
                 }
@@ -147,18 +183,14 @@ namespace UnityLicenseManager.Editor {
             RefreshList(_licenseInfosProp);
 
             // 描画用リスト構築
-            _licenseInfoList = new ReorderableList(serializedObject, _licenseInfosProp, true, true, false, false);
+            _licenseInfoList = new ReorderableList(serializedObject, _licenseInfosProp, true, true, true, true);
             _licenseInfoList.drawHeaderCallback += rect => {
                 EditorGUI.LabelField(rect, "Licenses");
             };
             _licenseInfoList.drawElementCallback += (rect, index, active, focused) => {
                 var elementProp = _licenseInfosProp.GetArrayElementAtIndex(index);
-                var label = new GUIContent(GetLicenseHeaderText(null));
-                var assetProp = elementProp.FindPropertyRelative("asset");
+                var label = new GUIContent(GetLicenseHeaderText(elementProp));
                 var isActiveProp = elementProp.FindPropertyRelative("isActive");
-                if (assetProp.objectReferenceValue is TextAsset textAsset) {
-                    label.text = GetLicenseHeaderText(textAsset);
-                }
 
                 var drawRect = rect;
                 var height = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
