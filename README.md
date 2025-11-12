@@ -1,5 +1,5 @@
 # unity-license-manager
-Unity内で利用されているライセンス情報を管理するための機能
+Unity内で利用されているライセンス情報を管理するための機能  
 <img width="434" height="686" alt="image" src="https://github.com/user-attachments/assets/d276f573-0235-4fdd-864a-848b79534851" />
 
 ## 概要
