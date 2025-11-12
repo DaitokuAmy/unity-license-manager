@@ -1,0 +1,16 @@
+{
+    "name": "UnityLicenseManager.Editor",
+    "rootNamespace": "",
+    "references": ["GUID:1d7fef3c1bae8504ba7993ce44e8faa5"],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
