@@ -115,10 +115,38 @@ namespace UnityLicenseManager.Editor {
         }
 
         /// <summary>
+        /// リストの中身で不正なデータをリフレッシュ
+        /// </summary>
+        private void RefreshList(SerializedProperty prop) {
+            serializedObject.Update();
+            var dirty = false;
+            for (var i = prop.arraySize - 1; i >= 0; i--) {
+                var elementProp = prop.GetArrayElementAtIndex(i);
+                var assetProp = elementProp.FindPropertyRelative("asset");
+                if (assetProp.objectReferenceValue == null) {
+                    prop.DeleteArrayElementAtIndex(i);
+                    dirty = true;
+                }
+            }
+
+            serializedObject.ApplyModifiedProperties();
+            if (dirty) {
+                AssetDatabase.Refresh();
+                AssetDatabase.SaveAssets();
+            }
+        }
+
+        /// <summary>
         /// アクティブ時処理
         /// </summary>
         private void OnEnable() {
+            // プロパティ取得
             _licenseInfosProp = serializedObject.FindProperty("_licenseInfos");
+
+            // リストの中身をリフレッシュ
+            RefreshList(_licenseInfosProp);
+
+            // 描画用リスト構築
             _licenseInfoList = new ReorderableList(serializedObject, _licenseInfosProp, true, true, false, false);
             _licenseInfoList.drawHeaderCallback += rect => {
                 EditorGUI.LabelField(rect, "Licenses");
@@ -147,6 +175,8 @@ namespace UnityLicenseManager.Editor {
                 var height = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
                 return height;
             };
+
+            // 選択状態初期化
             if (_licenseInfoList.count > 0) {
                 _licenseInfoList.Select(0);
             }
