@@ -31,3 +31,39 @@ Unityプロジェクトでアプリリリース時にライセンス表記を行
 バージョンを指定したい場合には以下のように記述します。
 
 https://github.com/DaitokuAmy/unity-license-manager.git?path=/Packages/com.daitokuamy.unitylicensemanager#1.0.0
+
+## 使用方法
+#### 設定ファイルの作成
+以下のように設定ファイルを任意の場所に作成します  
+<img width="703" height="667" alt="image" src="https://github.com/user-attachments/assets/3ab1ac31-ae55-4aa8-bce6-2f7916e6f0e0" />
+
+#### ライセンス情報の設定
+**Auto Search** ボタンを押す事で、プロジェクトに含まれる LICENSE.md を検索し、ライセンス表記を自動抽出する  
+<img width="798" height="197" alt="image" src="https://github.com/user-attachments/assets/9c9a3e66-7ad2-4214-a3fa-8064c53ceff8" />
+<img width="479" height="645" alt="image" src="https://github.com/user-attachments/assets/b613a241-84d3-496b-a970-ed5b4751c3aa" />
+
+Licenseファイルを使わない場合、**License** に設定された TextAsset を Noneにする事で直接テキストを入力する事が可能
+<img width="476" height="304" alt="image" src="https://github.com/user-attachments/assets/6157dae1-2fc7-49df-8499-953e7fdcb395" />
+
+**Name** にライセンス表記時にヘッダーとして出すシステム名称などを入力する  
+※空文字の場合は取得時にスキップされます
+
+#### プログラムから取得する
+```
+// static関数を使ってライセンス情報を配列として取得できる
+var licenseInfos = LicenseSettings.GetLicenseInfos();
+var licenseText = new StringBuilder();
+var first = true;
+foreach (var info in licenseInfos) {
+    if (!first) {
+        licenseText.AppendLine();
+    }
+    first = false;
+
+    // Name, License にそれぞれテキストが含まれているため、表記したいルールに合わせて利用する
+    licenseText.AppendLine($"<b>{info.Name}</b>");
+    licenseText.AppendLine(info.License);
+}
+
+_text.text = licenseText.ToString();
+```
