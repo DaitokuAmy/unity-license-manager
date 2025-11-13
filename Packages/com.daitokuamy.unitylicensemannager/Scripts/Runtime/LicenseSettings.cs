@@ -47,7 +47,7 @@ namespace UnityLicenseManager {
         private LicenseInfo[] _licenseInfos = Array.Empty<LicenseInfo>();
 
         /// <summary>シングルトンインスタンス</summary>
-        public static LicenseSettings Instance {
+        private static LicenseSettings Instance {
             get {
                 if (s_instance != null) {
                     return s_instance;
@@ -72,7 +72,27 @@ namespace UnityLicenseManager {
         /// <summary>
         /// ライセンス情報の取得
         /// </summary>
-        public ILicenseInfo[] GetLicenseInfos() {
+        public static ILicenseInfo[] GetLicenseInfos() {
+            if (Instance == null) {
+                return Array.Empty<ILicenseInfo>();
+            }
+
+            return Instance.GetLicenseInfosInternal();
+        }
+
+        /// <summary>
+        /// アクティブ時処理
+        /// </summary>
+        private void OnEnable() {
+            if (s_instance == null) {
+                s_instance = this;
+            }
+        }
+
+        /// <summary>
+        /// ライセンス情報の取得
+        /// </summary>
+        private ILicenseInfo[] GetLicenseInfosInternal() {
             var result = new List<ILicenseInfo>();
             foreach (var info in _licenseInfos) {
                 if (!info.isActive) {
