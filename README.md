@@ -48,7 +48,7 @@ Licenseファイルを使わない場合、**License** に設定された TextAs
 **Name** にライセンス表記時にヘッダーとして出すシステム名称などを入力する  
 ※空文字の場合は取得時にスキップされます
 
-#### プログラムから取得する
+#### プログラムから取得し、表示に利用する
 ```
 // static関数を使ってライセンス情報を配列として取得できる
 var licenseInfos = LicenseSettings.GetLicenseInfos();
@@ -67,3 +67,4 @@ foreach (var info in licenseInfos) {
 
 _text.text = licenseText.ToString();
 ```
+<img width="1103" height="617" alt="image" src="https://github.com/user-attachments/assets/140e1869-84cb-40d2-9158-946ebd79e783" />
