@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.daitokuamy.unitylicensemanager": {
-      "version": "file:com.daitokuamy.unitylicensemannager",
+      "version": "file:com.daitokuamy.unitylicensemanager",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}
