@@ -48,6 +48,9 @@ Licenseファイルを使わない場合、**License** に設定された TextAs
 **Name** にライセンス表記時にヘッダーとして出すシステム名称などを入力する  
 ※空文字の場合は取得時にスキップされます
 
+Licenses についている CheckBox を外す事で、リストアップ時にスキップする事も可能  
+<img width="465" height="288" alt="image" src="https://github.com/user-attachments/assets/6549b3cf-9de8-42b4-a29d-7036d645e515" />
+
 #### プログラムから取得し、表示に利用する
 ```
 // static関数を使ってライセンス情報を配列として取得できる
