@@ -15,21 +15,29 @@ MonoBehaviour:
   _licenseInfos:
   - isActive: 1
     name: AI Navigation
-    dataType: 0
     asset: {fileID: 4900000, guid: af8f9a7f066204789819c6a616afe2c0, type: 3}
     text: 
   - isActive: 1
+    name: Burst
+    asset: {fileID: 4900000, guid: 3adebabc9c53348aab08029333dba930, type: 3}
+    text: 
+  - isActive: 1
     name: Input System
-    dataType: 0
     asset: {fileID: 4900000, guid: 9166eed4756114bdaa498aca2df93e19, type: 3}
     text: 
   - isActive: 1
-    name: Test Framework
-    dataType: 0
-    asset: {fileID: 4900000, guid: 9c8887056eaaa7e4888ca0131e2892da, type: 3}
+    name: Rider Editor
+    asset: {fileID: 4900000, guid: 5598b14661b5f4c43bed757f34b6d172, type: 3}
+    text: 
+  - isActive: 1
+    name: Shader Graph
+    asset: {fileID: 4900000, guid: 3627da0ec84594020b79e02cec8d0b41, type: 3}
     text: 
   - isActive: 1
     name: Timeline
-    dataType: 0
     asset: {fileID: 4900000, guid: 6ecb9e17e44feb84cb80451fa27b09fe, type: 3}
+    text: 
+  - isActive: 1
+    name: Test Framework
+    asset: {fileID: 4900000, guid: 9c8887056eaaa7e4888ca0131e2892da, type: 3}
     text: 

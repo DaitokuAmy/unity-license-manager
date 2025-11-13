@@ -20,7 +20,8 @@ namespace UnityLicenseManager.Editor {
         public override void OnInspectorGUI() {
             serializedObject.Update();
 
-            using (var scrollScope = new EditorGUILayout.ScrollViewScope(_listScroll, GUILayout.Height(300))) {
+            var scrollHeight = Mathf.Min(300, _licenseInfoList.GetHeight());
+            using (var scrollScope = new EditorGUILayout.ScrollViewScope(_listScroll, GUILayout.Height(scrollHeight))) {
                 // Display List
                 _licenseInfoList.DoLayoutList();
 
@@ -68,6 +69,25 @@ namespace UnityLicenseManager.Editor {
                         _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("isActive").boolValue = true;
                     }
                 }
+
+                if (GUILayout.Button("Sort")) {
+                    for (var start = 0; start < _licenseInfosProp.arraySize - 2; start++) {
+                        var currentIndex = start;
+                        var currentName = _licenseInfosProp.GetArrayElementAtIndex(currentIndex).FindPropertyRelative("name").stringValue;
+                        for (var i = start + 1; i < _licenseInfosProp.arraySize; i++) {
+                            var elementProp = _licenseInfosProp.GetArrayElementAtIndex(i);
+                            var targetName = elementProp.FindPropertyRelative("name").stringValue;
+                            if (string.Compare(currentName, targetName, StringComparison.Ordinal) > 0) {
+                                currentIndex = i;
+                                currentName = targetName;
+                            }
+                        }
+
+                        if (currentIndex != start) {
+                            _licenseInfosProp.MoveArrayElement(currentIndex, start);
+                        }
+                    }
+                }
             }
 
             // Preview
@@ -77,7 +97,7 @@ namespace UnityLicenseManager.Editor {
                 var assetProp = _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("asset");
                 var textProp = _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("text");
                 var textAsset = assetProp.objectReferenceValue as TextAsset;
-                using (new EditorGUILayout.VerticalScope()) {
+                using (new EditorGUILayout.VerticalScope(GUI.skin.box)) {
                     EditorGUILayout.Space();
                     EditorGUILayout.LabelField("Preview", EditorStyles.objectFieldThumb);
                     EditorGUILayout.PropertyField(nameProp);
@@ -155,7 +175,7 @@ namespace UnityLicenseManager.Editor {
                 var elementProp = prop.GetArrayElementAtIndex(i);
                 var assetProp = elementProp.FindPropertyRelative("asset");
                 var textProp = elementProp.FindPropertyRelative("text");
-                
+
                 // TextAssetがMissingしていたら自動削除
                 if (assetProp.objectReferenceValue == null &&
                     assetProp.objectReferenceInstanceIDValue != 0 &&
