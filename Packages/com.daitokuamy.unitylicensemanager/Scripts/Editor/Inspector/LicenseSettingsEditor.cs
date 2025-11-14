@@ -247,7 +247,6 @@ namespace UnityLicenseManager.Editor {
                         });
 
                         menu.ShowAsContext();
-                        e.Use();
                     }
                 }
             };
