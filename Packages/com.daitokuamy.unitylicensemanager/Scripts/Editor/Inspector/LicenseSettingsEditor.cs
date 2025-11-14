@@ -223,6 +223,33 @@ namespace UnityLicenseManager.Editor {
                 EditorGUI.LabelField(drawRect, label, EditorStyles.boldLabel);
                 drawRect.xMin -= 20;
                 drawRect.y += height;
+
+                var e = Event.current;
+                if (e.type == EventType.MouseDown) {
+                    if (e.button == 1 && rect.Contains(e.mousePosition)) {
+                        // 右クリックメニュー
+                        var menu = new GenericMenu();
+                        menu.AddItem(new GUIContent("Activate"), false, () => {
+                            serializedObject.Update();
+                            foreach (var idx in _licenseInfoList.selectedIndices) {
+                                _licenseInfosProp.GetArrayElementAtIndex(idx).FindPropertyRelative("isActive").boolValue = true;
+                            }
+
+                            serializedObject.ApplyModifiedProperties();
+                        });
+                        menu.AddItem(new GUIContent("Deactivate"), false, () => {
+                            serializedObject.Update();
+                            foreach (var idx in _licenseInfoList.selectedIndices) {
+                                _licenseInfosProp.GetArrayElementAtIndex(idx).FindPropertyRelative("isActive").boolValue = false;
+                            }
+
+                            serializedObject.ApplyModifiedProperties();
+                        });
+
+                        menu.ShowAsContext();
+                        e.Use();
+                    }
+                }
             };
             _licenseInfoList.elementHeightCallback += index => {
                 var height = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
