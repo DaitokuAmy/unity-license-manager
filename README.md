@@ -1,6 +1,6 @@
 # unity-license-manager
 Unity内で利用されているライセンス情報を管理するための機能  
-<img width="434" height="686" alt="image" src="https://github.com/user-attachments/assets/d276f573-0235-4fdd-864a-848b79534851" />
+<img width="478" height="549" alt="image" src="https://github.com/user-attachments/assets/6180d6ac-e5b5-4910-991b-0e3e6dc89990" />
 
 ## 概要
 #### 特徴
@@ -42,7 +42,7 @@ https://github.com/DaitokuAmy/unity-license-manager.git?path=/Packages/com.daito
 <img width="798" height="197" alt="image" src="https://github.com/user-attachments/assets/9c9a3e66-7ad2-4214-a3fa-8064c53ceff8" />
 <img width="479" height="645" alt="image" src="https://github.com/user-attachments/assets/b613a241-84d3-496b-a970-ed5b4751c3aa" />
 
-Licenseファイルを使わない場合、**License** に設定された TextAsset を Noneにする事で直接テキストを入力する事が可能
+Licenseファイルを使わない場合、**License** に設定された TextAsset を Noneにする事で直接テキストを入力する事が可能  
 <img width="476" height="304" alt="image" src="https://github.com/user-attachments/assets/6157dae1-2fc7-49df-8499-953e7fdcb395" />
 
 **Name** にライセンス表記時にヘッダーとして出すシステム名称などを入力する  
@@ -61,6 +61,7 @@ foreach (var info in licenseInfos) {
     if (!first) {
         licenseText.AppendLine();
     }
+
     first = false;
 
     // Name, License にそれぞれテキストが含まれているため、表記したいルールに合わせて利用する
