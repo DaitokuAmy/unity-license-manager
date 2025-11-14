@@ -204,6 +204,7 @@ namespace UnityLicenseManager.Editor {
 
             // 描画用リスト構築
             _licenseInfoList = new ReorderableList(serializedObject, _licenseInfosProp, true, true, true, true);
+            _licenseInfoList.multiSelect = true;
             _licenseInfoList.drawHeaderCallback += rect => {
                 EditorGUI.LabelField(rect, "Licenses");
             };
