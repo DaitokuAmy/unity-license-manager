@@ -13,6 +13,42 @@ MonoBehaviour:
   m_Name: LicenseSettings
   m_EditorClassIdentifier: UnityLicenseManager.Runtime::UnityLicenseManager.LicenseSettings
   _licenseInfos:
+  - isActive: 0
+    name: 
+    asset: {fileID: 4900000, guid: 28c762070e0d3359b18a59f9402d5013, type: 3}
+    text: 
+  - isActive: 0
+    name: 
+    asset: {fileID: 4900000, guid: bfcb3ba499f7d452b92d9a9cc3378788, type: 3}
+    text: 
+  - isActive: 0
+    name: 
+    asset: {fileID: 4900000, guid: 192a998b912484856a34120268cfbfc9, type: 3}
+    text: 
+  - isActive: 0
+    name: 
+    asset: {fileID: 4900000, guid: c8f6fa942856442b8bd72594d3ce7363, type: 3}
+    text: 
+  - isActive: 0
+    name: 
+    asset: {fileID: 4900000, guid: 682cbcd3b2e7545e2bbc6306016e7bb7, type: 3}
+    text: 
+  - isActive: 0
+    name: 
+    asset: {fileID: 4900000, guid: eefc64b67f7aad040905b2000990f5f3, type: 3}
+    text: 
+  - isActive: 0
+    name: 
+    asset: {fileID: 4900000, guid: 9bff32140d1498a4a9f6f18b09e8959c, type: 3}
+    text: 
+  - isActive: 0
+    name: 
+    asset: {fileID: 4900000, guid: feee7af7dbba54f55abd26b21ca99071, type: 3}
+    text: 
+  - isActive: 0
+    name: 
+    asset: {fileID: 4900000, guid: 20e774542c826284fbc98ca46bac755c, type: 3}
+    text: 
   - isActive: 1
     name: AI Navigation
     asset: {fileID: 4900000, guid: af8f9a7f066204789819c6a616afe2c0, type: 3}
@@ -41,3 +77,8 @@ MonoBehaviour:
     name: Test Framework
     asset: {fileID: 4900000, guid: 9c8887056eaaa7e4888ca0131e2892da, type: 3}
     text: 
+  _searchFilterInfos:
+  - folderPaths:
+    - Packages
+    fileNames:
+    - third party notices

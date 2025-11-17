@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 #if UNITY_EDITOR
 using System;
@@ -13,6 +14,15 @@ namespace UnityLicenseManager {
     /// License管理用の設定ファイル
     /// </summary>
     public class LicenseSettings : ScriptableObject {
+        /// <summary>
+        /// フィルター情報
+        /// </summary>
+        [Serializable]
+        public class FilterInfo {
+            public string[] folderPaths;
+            public string[] fileNames;
+        }
+        
         /// <summary>
         /// ライセンス情報
         /// </summary>
@@ -45,6 +55,8 @@ namespace UnityLicenseManager {
 
         [SerializeField, Tooltip("ライセンス情報リスト")]
         private LicenseInfo[] _licenseInfos = Array.Empty<LicenseInfo>();
+        [SerializeField, Tooltip("オートサーチ時の検索フィルター情報リスト")]
+        private FilterInfo[] _searchFilterInfos = Array.Empty<FilterInfo>();
 
         /// <summary>シングルトンインスタンス</summary>
         private static LicenseSettings Instance {
@@ -68,6 +80,9 @@ namespace UnityLicenseManager {
                 return s_instance;
             }
         }
+        
+        /// <summary>オートサーチ時の検索フィルター情報リスト</summary>
+        public FilterInfo[] SearchFilterInfos => _searchFilterInfos;
 
         /// <summary>
         /// ライセンス情報の取得

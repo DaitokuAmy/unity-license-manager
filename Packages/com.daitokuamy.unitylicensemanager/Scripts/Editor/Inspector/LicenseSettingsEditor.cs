@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NUnit.Framework;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace UnityLicenseManager.Editor {
     /// <summary>
@@ -13,6 +15,7 @@ namespace UnityLicenseManager.Editor {
     [CustomEditor(typeof(LicenseSettings))]
     public class LicenseSettingsEditor : UnityEditor.Editor {
         private SerializedProperty _licenseInfosProp;
+        private SerializedProperty _searchFilterInfosProp;
         private ReorderableList _licenseInfoList;
         private Vector2 _listScroll;
 
@@ -37,39 +40,6 @@ namespace UnityLicenseManager.Editor {
                     _licenseInfoList.ClearSelection();
                 }
 
-                // Auto Search
-                if (GUILayout.Button("Auto Search")) {
-                    var currentAssets = new List<TextAsset>(_licenseInfosProp.arraySize);
-                    for (var i = 0; i < _licenseInfosProp.arraySize; i++) {
-                        var elementProp = _licenseInfosProp.GetArrayElementAtIndex(i);
-                        var assetProp = elementProp.FindPropertyRelative("asset");
-                        if (assetProp.objectReferenceValue is TextAsset asset) {
-                            currentAssets.Add(asset);
-                        }
-                    }
-
-                    var guids = AssetDatabase.FindAssets("t:textasset LICENSE", new[] { "Assets", "Packages" });
-                    foreach (var guid in guids) {
-                        var path = AssetDatabase.GUIDToAssetPath(guid);
-                        var fileName = Path.GetFileNameWithoutExtension(path).ToLower();
-                        if (fileName != "license") {
-                            continue;
-                        }
-
-                        var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
-                        if (currentAssets.Contains(asset)) {
-                            continue;
-                        }
-
-                        var index = _licenseInfosProp.arraySize;
-                        _licenseInfosProp.InsertArrayElementAtIndex(index);
-                        _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("name").stringValue = string.Empty;
-                        _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("asset").objectReferenceValue = asset;
-                        _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("text").stringValue = string.Empty;
-                        _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("isActive").boolValue = true;
-                    }
-                }
-
                 if (GUILayout.Button("Sort")) {
                     for (var start = 0; start < _licenseInfosProp.arraySize - 2; start++) {
                         var currentIndex = start;
@@ -87,6 +57,76 @@ namespace UnityLicenseManager.Editor {
                             _licenseInfosProp.MoveArrayElement(currentIndex, start);
                         }
                     }
+                }
+            }
+
+            // Auto Search
+            EditorGUILayout.PropertyField(_searchFilterInfosProp, true);
+            if (GUILayout.Button("Auto Search")) {
+                var currentAssets = new List<TextAsset>(_licenseInfosProp.arraySize);
+                for (var i = 0; i < _licenseInfosProp.arraySize; i++) {
+                    var elementProp = _licenseInfosProp.GetArrayElementAtIndex(i);
+                    var assetProp = elementProp.FindPropertyRelative("asset");
+                    if (assetProp.objectReferenceValue is TextAsset asset) {
+                        currentAssets.Add(asset);
+                    }
+                }
+
+                var guids = new List<string>();
+                for (var i = 0; i < _searchFilterInfosProp.arraySize; i++) {
+                    var elementProp = _searchFilterInfosProp.GetArrayElementAtIndex(i);
+                    var folderPathsProp = elementProp.FindPropertyRelative("folderPaths");
+                    var fileNamesProp = elementProp.FindPropertyRelative("fileNames");
+                    var folderPaths = new List<string>();
+                    for (var j = 0; j < folderPathsProp.arraySize; j++) {
+                        var folderPath = folderPathsProp.GetArrayElementAtIndex(j).stringValue;
+                        if (string.IsNullOrEmpty(folderPath)) {
+                            continue;
+                        }
+
+                        folderPaths.Add(folderPath);
+                    }
+
+                    if (folderPaths.Count <= 0) {
+                        folderPaths.Add("Assets");
+                        folderPaths.Add("Packages");
+                    }
+
+                    var folderPathArray = folderPaths.ToArray();
+                    for (var j = 0; j < fileNamesProp.arraySize; j++) {
+                        var fileName = fileNamesProp.GetArrayElementAtIndex(j).stringValue.ToLower();
+                        if (string.IsNullOrEmpty(fileName)) {
+                            continue;
+                        }
+
+                        var foundGuids = AssetDatabase.FindAssets($"{fileName} t:{nameof(TextAsset)}", folderPathArray);
+                        foreach (var foundGuid in foundGuids) {
+                            var assetPath = AssetDatabase.GUIDToAssetPath(foundGuid);
+                            var fn = Path.GetFileNameWithoutExtension(assetPath).ToLower();
+                            if (fn != fileName) {
+                                continue;
+                            }
+                            
+                            guids.Add(foundGuid);
+                        }
+                    }
+                }
+
+                guids = guids.Distinct().ToList();
+
+                foreach (var guid in guids) {
+                    var path = AssetDatabase.GUIDToAssetPath(guid);
+                    var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
+                    if (currentAssets.Contains(asset)) {
+                        continue;
+                    }
+
+                    var index = _licenseInfosProp.arraySize;
+                    _licenseInfosProp.InsertArrayElementAtIndex(index);
+                    _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("name").stringValue = string.Empty;
+                    _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("asset").objectReferenceValue = asset;
+                    _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("text").stringValue = string.Empty;
+                    _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("isActive").boolValue = false;
                 }
             }
 
@@ -198,6 +238,7 @@ namespace UnityLicenseManager.Editor {
         private void OnEnable() {
             // プロパティ取得
             _licenseInfosProp = serializedObject.FindProperty("_licenseInfos");
+            _searchFilterInfosProp = serializedObject.FindProperty("_searchFilterInfos");
 
             // リストの中身をリフレッシュ
             RefreshList(_licenseInfosProp);
