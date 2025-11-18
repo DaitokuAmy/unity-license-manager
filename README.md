@@ -1,6 +1,6 @@
 # unity-license-manager
 Unity内で利用されているライセンス情報を管理するための機能  
-<img width="478" height="549" alt="image" src="https://github.com/user-attachments/assets/6180d6ac-e5b5-4910-991b-0e3e6dc89990" />
+<img width="478" height="807" alt="image" src="https://github.com/user-attachments/assets/06a3f3a6-905a-4076-8e5b-d31bb0cf4072" />
 
 ## 概要
 #### 特徴
@@ -38,9 +38,12 @@ https://github.com/DaitokuAmy/unity-license-manager.git?path=/Packages/com.daito
 <img width="703" height="667" alt="image" src="https://github.com/user-attachments/assets/3ab1ac31-ae55-4aa8-bce6-2f7916e6f0e0" />
 
 #### ライセンス情報の設定
-**Auto Search** ボタンを押す事で、プロジェクトに含まれる LICENSE.md を検索し、ライセンス表記を自動抽出する  
-<img width="798" height="197" alt="image" src="https://github.com/user-attachments/assets/9c9a3e66-7ad2-4214-a3fa-8064c53ceff8" />
-<img width="479" height="645" alt="image" src="https://github.com/user-attachments/assets/b613a241-84d3-496b-a970-ed5b4751c3aa" />
+**Search Filter Infos** の中身を設定し、Licenseファイルを検索するための条件を指定する  
+**Folder Paths** には、検索対象とするフォルダのパスを指定し、**File Names** には、検索対象とするファイル名を指定する  
+<img width="466" height="198" alt="image" src="https://github.com/user-attachments/assets/bf14663e-f316-4e8e-a8d3-612015f07b63" />
+
+**Auto Search** ボタンを押して、検索条件にヒットしたLicenseファイルを一括で追加する  
+<img width="462" height="247" alt="image" src="https://github.com/user-attachments/assets/7d82f648-c473-4f5a-9294-ccab03c3d2eb" />
 
 Licenseファイルを使わない場合、**License** に設定された TextAsset を Noneにする事で直接テキストを入力する事が可能  
 <img width="476" height="304" alt="image" src="https://github.com/user-attachments/assets/6157dae1-2fc7-49df-8499-953e7fdcb395" />
