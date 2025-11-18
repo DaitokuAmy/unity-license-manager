@@ -133,39 +133,41 @@ namespace UnityLicenseManager.Editor {
             // Preview
             if (_licenseInfoList.selectedIndices.Count > 0) {
                 var index = _licenseInfoList.selectedIndices[0];
-                var nameProp = _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("name");
-                var assetProp = _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("asset");
-                var textProp = _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("text");
-                var textAsset = assetProp.objectReferenceValue as TextAsset;
-                using (new EditorGUILayout.VerticalScope(GUI.skin.box)) {
-                    EditorGUILayout.Space();
-                    EditorGUILayout.LabelField("Preview", EditorStyles.objectFieldThumb);
-                    EditorGUILayout.PropertyField(nameProp);
-                    using (var scope = new EditorGUI.ChangeCheckScope()) {
-                        EditorGUILayout.PropertyField(assetProp, new GUIContent("License"));
-                        if (scope.changed) {
-                            if (assetProp.objectReferenceValue != null) {
-                                textProp.stringValue = string.Empty;
-                            }
-                        }
-                    }
-
-                    var text = textAsset != null ? textAsset.text : textProp.stringValue;
-                    var height = EditorStyles.textArea.CalcHeight(new GUIContent(text), EditorGUIUtility.currentViewWidth);
-                    var useTextAsset = textAsset != null;
-                    using (new EditorGUI.DisabledScope(useTextAsset)) {
-                        using (var scope = new EditorGUI.ChangeCheckScope()) {
-                            text = EditorGUILayout.TextArea(text, EditorStyles.textArea, GUILayout.Height(height));
-                            if (scope.changed) {
-                                textProp.stringValue = text;
-                            }
-                        }
-                    }
-
-                    using (new EditorGUILayout.HorizontalScope()) {
+                if (index < _licenseInfosProp.arraySize) {
+                    var nameProp = _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("name");
+                    var assetProp = _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("asset");
+                    var textProp = _licenseInfosProp.GetArrayElementAtIndex(index).FindPropertyRelative("text");
+                    var textAsset = assetProp.objectReferenceValue as TextAsset;
+                    using (new EditorGUILayout.VerticalScope(GUI.skin.box)) {
                         EditorGUILayout.Space();
-                        if (GUILayout.Button("Copy Clipboard")) {
-                            GUIUtility.systemCopyBuffer = text;
+                        EditorGUILayout.LabelField("Preview", EditorStyles.objectFieldThumb);
+                        EditorGUILayout.PropertyField(nameProp);
+                        using (var scope = new EditorGUI.ChangeCheckScope()) {
+                            EditorGUILayout.PropertyField(assetProp, new GUIContent("License"));
+                            if (scope.changed) {
+                                if (assetProp.objectReferenceValue != null) {
+                                    textProp.stringValue = string.Empty;
+                                }
+                            }
+                        }
+
+                        var text = textAsset != null ? textAsset.text : textProp.stringValue;
+                        var height = EditorStyles.textArea.CalcHeight(new GUIContent(text), EditorGUIUtility.currentViewWidth);
+                        var useTextAsset = textAsset != null;
+                        using (new EditorGUI.DisabledScope(useTextAsset)) {
+                            using (var scope = new EditorGUI.ChangeCheckScope()) {
+                                text = EditorGUILayout.TextArea(text, EditorStyles.textArea, GUILayout.Height(height));
+                                if (scope.changed) {
+                                    textProp.stringValue = text;
+                                }
+                            }
+                        }
+
+                        using (new EditorGUILayout.HorizontalScope()) {
+                            EditorGUILayout.Space();
+                            if (GUILayout.Button("Copy Clipboard")) {
+                                GUIUtility.systemCopyBuffer = text;
+                            }
                         }
                     }
                 }
